@@ -30,15 +30,15 @@ getPlayerBasedOnCount iterationCount
     | even iterationCount = Player1
     | otherwise = Player2
 
-generateSliceMap :: (Num a, Eq a, Integral a) => [a] -> a -> [[BoardGridPlaceholder]]
-generateSliceMap subArray count = let boardGrid = [] in case subArray of
+generateSlices :: (Num a, Eq a, Integral a) => [a] -> a -> [[BoardGridPlaceholder]]
+generateSlices subArray count = let boardGrid = [] in case subArray of
     [] -> boardGrid
     (x:xs) -> [ if place == x then
                     getPlayerBasedOnCount count
                 else
                     Empty
                 | place <- [1..7]
-              ] : generateSliceMap xs (count + 1)
+              ] : generateSlices xs (count + 1)
 
 squashSlicesInnerLoop :: Int -> [[BoardGridPlaceholder]] -> [BoardGridPlaceholder]
 squashSlicesInnerLoop iteration arrayOfArrays =
@@ -46,15 +46,24 @@ squashSlicesInnerLoop iteration arrayOfArrays =
         if placeHolder == Empty then placeHolders else placeHolders ++ [placeHolder]
     ) [] $
         foldl (\captureArray sliceIndex ->
-            ((arrayOfArrays !! sliceIndex) !! iteration) : captureArray) [] [0..(length arrayOfArrays - 1)]
+            captureArray ++ [(arrayOfArrays !! sliceIndex) !! iteration]) [] [0..(length arrayOfArrays - 1)]
+
+transposeVerticalSlices :: [[BoardGridPlaceholder]] -> [[BoardGridPlaceholder]]
+transposeVerticalSlices verticalSlices = foldl (\accumulator iterator ->
+        foldl (\row sliceIndex ->
+            let slice = (verticalSlices !! sliceIndex) in
+            row ++ [if length slice - 1 >= iterator then slice !! iterator else Empty]
+        ) [] [0..(length verticalSlices - 1)] : accumulator
+    ) [] [0..foldr (max . length) 0 verticalSlices - 1]
 
 squashSlices :: [[BoardGridPlaceholder]] -> [[BoardGridPlaceholder]]
-squashSlices arrayOfArrays = foldl (\accumulator iteration ->
-        squashSlicesInnerLoop iteration arrayOfArrays : accumulator
+squashSlices arrayOfArrays = transposeVerticalSlices $
+    foldl (\accumulator iteration ->
+        accumulator ++ [squashSlicesInnerLoop iteration arrayOfArrays]
     ) [] [0..6]
 
 makeBoardGrid :: Board -> BoardGrid
-makeBoardGrid (Board array) = BoardGrid $ squashSlices $ generateSliceMap array 0
+makeBoardGrid (Board array) = BoardGrid $ squashSlices $ generateSlices array 0
 
 hasWon :: Board -> Bool
-hasWon b = True
+hasWon board = True
