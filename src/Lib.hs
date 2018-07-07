@@ -5,6 +5,7 @@ module Lib (
 ) where
 
 import Data.Foldable
+import Data.List
 
 data BoardGridPlaceholder = Player1 | Player2 | Empty deriving (Eq)
 
@@ -79,5 +80,6 @@ checkHorizontalWinCondition (BoardGrid arrayOfArrays) player =
     ) arrayOfArrays
 
 hasWon :: Board -> Bool
-hasWon board = let boardGrid = makeBoardGrid board in
-    checkHorizontalWinCondition boardGrid Player1
+hasWon board = let (BoardGrid arrayOfArrays) = makeBoardGrid board in
+    checkHorizontalWinCondition (BoardGrid arrayOfArrays) Player1 ||
+    checkHorizontalWinCondition (BoardGrid $ transpose arrayOfArrays) Player1
