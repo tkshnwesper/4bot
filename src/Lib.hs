@@ -1,6 +1,7 @@
 module Lib (
     Board(..),
-    hasWon
+    hasWon,
+    makeBoardGrid
 ) where
 
 import Data.Foldable
@@ -10,9 +11,15 @@ data BoardGridPlaceholder = Player1 | Player2 | Empty deriving (Eq)
 instance Show BoardGridPlaceholder where
     show Player1 = "X"
     show Player2 = "O"
-    show Empty = ""
+    show Empty = " "
 
-newtype BoardGrid = BoardGrid [[BoardGridPlaceholder]] deriving (Eq, Show)
+newtype BoardGrid = BoardGrid [[BoardGridPlaceholder]] deriving (Eq)
+
+instance Show BoardGrid where
+    show (BoardGrid arrayOfArrays) = foldl (\accumulator row ->
+            let rowString = foldr ((++) . (++ " ") . show) "" row in
+            if null accumulator then rowString else accumulator ++ "\n" ++ rowString
+        ) "" arrayOfArrays
 --
 -- data BoardConfig = BoardConfig {
 --     horizontalSlots :: Int,

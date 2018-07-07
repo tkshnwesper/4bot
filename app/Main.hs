@@ -3,4 +3,4 @@ module Main where
 import Lib
 
 main :: IO ()
-main = putStrLn "ehe"
+main = print $ makeBoardGrid $ Board [1, 2, 3, 4, 4]
