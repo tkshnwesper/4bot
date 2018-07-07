@@ -79,7 +79,20 @@ checkHorizontalWinCondition (BoardGrid arrayOfArrays) player =
         any (>= 4) . scanr (\currentElement count -> if currentElement == player then count + 1 else 0) 0
     ) arrayOfArrays
 
+checkDiagonalWinCondition :: BoardGrid -> BoardGridPlaceholder -> Bool
+checkDiagonalWinCondition (BoardGrid arrayOfArrays) player =
+    let numberOfRows = length arrayOfArrays
+        perimeter = if numberOfRows > 0 then numberOfRows + length (head arrayOfArrays) else 0 in
+    any (\num ->
+        any (>= 4)
+        (scanr (\(x, y) accumulator ->
+            let element = (arrayOfArrays !! y) !! x in
+            if element == player then accumulator + 1 else 0
+        ) 0 (nub [(a, b) | a <- [0..num], b <- [0..num], a + b == num]))
+    ) [0..perimeter - 1]
+
 hasWon :: Board -> Bool
 hasWon board = let (BoardGrid arrayOfArrays) = makeBoardGrid board in
     checkHorizontalWinCondition (BoardGrid arrayOfArrays) Player1 ||
-    checkHorizontalWinCondition (BoardGrid $ transpose arrayOfArrays) Player1
+    checkHorizontalWinCondition (BoardGrid $ transpose arrayOfArrays) Player1 ||
+    checkDiagonalWinCondition (BoardGrid arrayOfArrays) Player1
