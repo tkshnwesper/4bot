@@ -13,7 +13,7 @@ data BoardGridPlaceholder = Player1 | Player2 | Empty deriving (Eq)
 instance Show BoardGridPlaceholder where
     show Player1 = "X"
     show Player2 = "O"
-    show Empty = " "
+    show Empty = "_"
 
 newtype BoardGrid = BoardGrid [[BoardGridPlaceholder]] deriving (Eq)
 
@@ -105,7 +105,7 @@ hasWon :: Board -> Bool
 hasWon board =
     let (BoardGrid arrayOfArrays) = makeBoardGrid board
         transposeArray = transpose arrayOfArrays in
-    checkHorizontalWinCondition (BoardGrid arrayOfArrays) Player1 ||
-    checkHorizontalWinCondition (BoardGrid transposeArray) Player1 ||
-    checkDiagonalWinCondition (BoardGrid arrayOfArrays) Player1 ||
-    checkDiagonalWinCondition (BoardGrid $ reverse transposeArray) Player1
+    or $ [checkHorizontalWinCondition (BoardGrid arrayOfArrays),
+    checkHorizontalWinCondition (BoardGrid transposeArray),
+    checkDiagonalWinCondition (BoardGrid arrayOfArrays),
+    checkDiagonalWinCondition (BoardGrid $ reverse transposeArray)] <*> [Player1, Player2]
