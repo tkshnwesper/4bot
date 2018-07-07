@@ -1,6 +1,9 @@
 module Main where
 
+import Data.List
 import Lib
 
 main :: IO ()
-main = print $ makeBoardGrid $ Board [1, 2, 2, 3, 4, 3, 3, 4, 4, 5, 4]
+main =
+    let (BoardGrid array) = makeBoardGrid $ Board [4, 3, 3, 2, 1, 2, 2, 1, 1, 5, 1] in
+    print $ BoardGrid (reverse . transpose $ array)

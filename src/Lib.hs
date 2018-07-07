@@ -1,7 +1,8 @@
 module Lib (
     Board(..),
     hasWon,
-    makeBoardGrid
+    makeBoardGrid,
+    BoardGrid(..)
 ) where
 
 import Data.Foldable
@@ -88,11 +89,23 @@ checkDiagonalWinCondition (BoardGrid arrayOfArrays) player =
         (scanr (\(x, y) accumulator ->
             let element = (arrayOfArrays !! y) !! x in
             if element == player then accumulator + 1 else 0
-        ) 0 (nub [(a, b) | a <- [0..num], b <- [0..num], a + b == num]))
+        ) 0
+            (
+                nub [(x, y) |
+                x <- [0..num],
+                y <- [0..num],
+                x + y == num,
+                x < length (head arrayOfArrays),
+                y < length arrayOfArrays]
+            )
+        )
     ) [0..perimeter - 1]
 
 hasWon :: Board -> Bool
-hasWon board = let (BoardGrid arrayOfArrays) = makeBoardGrid board in
+hasWon board =
+    let (BoardGrid arrayOfArrays) = makeBoardGrid board
+        transposeArray = transpose arrayOfArrays in
     checkHorizontalWinCondition (BoardGrid arrayOfArrays) Player1 ||
-    checkHorizontalWinCondition (BoardGrid $ transpose arrayOfArrays) Player1 ||
-    checkDiagonalWinCondition (BoardGrid arrayOfArrays) Player1
+    checkHorizontalWinCondition (BoardGrid transposeArray) Player1 ||
+    checkDiagonalWinCondition (BoardGrid arrayOfArrays) Player1 ||
+    checkDiagonalWinCondition (BoardGrid $ reverse transposeArray) Player1
