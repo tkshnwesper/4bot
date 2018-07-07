@@ -72,5 +72,12 @@ squashSlices arrayOfArrays = transposeVerticalSlices $
 makeBoardGrid :: Board -> BoardGrid
 makeBoardGrid (Board array) = BoardGrid $ squashSlices $ generateSlices array 0
 
+checkHorizontalWinCondition :: BoardGrid -> BoardGridPlaceholder -> Bool
+checkHorizontalWinCondition (BoardGrid arrayOfArrays) player =
+    any (
+        any (>= 4) . scanr (\currentElement count -> if currentElement == player then count + 1 else 0) 0
+    ) arrayOfArrays
+
 hasWon :: Board -> Bool
-hasWon board = True
+hasWon board = let boardGrid = makeBoardGrid board in
+    checkHorizontalWinCondition boardGrid Player1
