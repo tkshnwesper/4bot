@@ -1,0 +1,4 @@
+language: haskell
+ghc:
+  - "8.4.1"
+script: cabal test --show-details=always
