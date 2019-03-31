@@ -1,4 +1,4 @@
-# 4bot
+# 4bot ![travis badge](https://travis-ci.com/tkshnwesper/4bot.svg?branch=master)
 
 ## Testing
 
