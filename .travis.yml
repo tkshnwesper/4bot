@@ -1,5 +1,5 @@
 language: haskell
 script: cabal configure --enable-tests --enable-coverage && cabal build && cabal test --show-details=always
 after_script:
-  - cabal install hpc-coveralls
-  - hpc-coveralls 4bot-test
+  - cabal sandbox init && cabal install hpc-coveralls
+  - .cabal-sandbox/bin/hpc-coveralls 4bot-test
